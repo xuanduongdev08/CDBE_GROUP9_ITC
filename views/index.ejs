@@ -1,0 +1,437 @@
+﻿<%- include('partials/header', { page: 'home' , categories: typeof categories !=='undefined' ? categories : [] }) %>
+
+    <!-- Top Promo Bar -->
+    <div class="container-fluid bg-gradient py-2 text-center"
+        style="background: linear-gradient(90deg, #ff6b6b, #ff8e53);">
+        <p class="mb-0 fw-bold text-white">
+            <i class="fas fa-fire me-2"></i>KHUYẾN MÃI ĐẶC BIỆT - Giảm giá lên đến 30% cho tất cả sản phẩm!
+            <a href="/shop" class="text-white text-decoration-underline ms-2">Xem ngay →</a>
+        </p>
+    </div>
+
+    <!-- Hero Banner Carousel -->
+    <div class="container-fluid px-0 position-relative hero-carousel-wrapper">
+        <div class="header-carousel owl-carousel position-relative">
+            <!-- Slide 1: Banner 1 -->
+            <div class="hero-slide hero-slide-banner" style="background-image: url('/img/banner1.png');">
+                <div class="hero-overlay"></div>
+                <div class="container">
+                    <div class="row align-items-center" style="min-height: 600px;">
+                        <div class="col-lg-7 hero-content-banner">
+                            <div class="hero-badge wow fadeInUp" data-wow-delay="0.1s">
+                                <span class="badge-custom badge-banner">
+                                    <i class="fas fa-fire me-2"></i>KHUYẾN MÃI ĐẶC BIỆT
+                                </span>
+                            </div>
+                            <h1 class="hero-title-banner wow fadeInUp" data-wow-delay="0.2s">
+                                Giảm Giá Lên Đến 30%
+                            </h1>
+                            <p class="hero-description-banner wow fadeInUp" data-wow-delay="0.3s">
+                                Khám phá bộ sưu tập sản phẩm công nghệ với giá ưu đãi nhất. Chất lượng cao, giá cả hợp
+                                lý.
+                            </p>
+                            <div class="hero-buttons wow fadeInUp" data-wow-delay="0.4s">
+                                <a href="/shop" class="btn btn-hero btn-primary-hero">
+                                    <i class="fas fa-shopping-bag me-2"></i>Mua Ngay
+                                </a>
+                                <a href="/bestseller" class="btn btn-hero btn-outline-hero">
+                                    <i class="fas fa-star me-2"></i>Sản Phẩm Bán Chạy
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 2: Banner 2 -->
+            <div class="hero-slide hero-slide-banner" style="background-image: url('/img/banner2.png');">
+                <div class="hero-overlay"></div>
+                <div class="container">
+                    <div class="row align-items-center" style="min-height: 600px;">
+                        <div class="col-lg-7 hero-content-banner">
+                            <div class="hero-badge wow fadeInUp" data-wow-delay="0.1s">
+                                <span class="badge-custom badge-banner">
+                                    <i class="fas fa-gift me-2"></i>ƯU ĐÃI MỚI
+                                </span>
+                            </div>
+                            <h1 class="hero-title-banner wow fadeInUp" data-wow-delay="0.2s">
+                                Sản Phẩm Gaming Chất Lượng
+                            </h1>
+                            <p class="hero-description-banner wow fadeInUp" data-wow-delay="0.3s">
+                                Nâng cấp setup gaming của bạn với các sản phẩm công nghệ hàng đầu. Hiệu năng vượt trội,
+                                giá cả phải chăng.
+                            </p>
+                            <div class="hero-buttons wow fadeInUp" data-wow-delay="0.4s">
+                                <a href="/shop" class="btn btn-hero btn-primary-hero">
+                                    <i class="fas fa-shopping-bag me-2"></i>Khám Phá Ngay
+                                </a>
+                                <a href="/shop?category=<%= typeof categories !== 'undefined' && categories.find(c => c.name === 'Chuột') ? categories.find(c => c.name === 'Chuột')._id : '' %>"
+                                    class="btn btn-hero btn-outline-hero">
+                                    <i class="fas fa-mouse me-2"></i>Xem Chuột Gaming
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 3: Banner 3 -->
+            <div class="hero-slide hero-slide-banner" style="background-image: url('/img/banner3.png');">
+                <div class="hero-overlay"></div>
+                <div class="container">
+                    <div class="row align-items-center" style="min-height: 600px;">
+                        <div class="col-lg-7 hero-content-banner">
+                            <div class="hero-badge wow fadeInUp" data-wow-delay="0.1s">
+                                <span class="badge-custom badge-banner">
+                                    <i class="fas fa-bolt me-2"></i>NỔI BẬT
+                                </span>
+                            </div>
+                            <h1 class="hero-title-banner wow fadeInUp" data-wow-delay="0.2s">
+                                Card Đồ Họa Hiệu Năng Cao
+                            </h1>
+                            <p class="hero-description-banner wow fadeInUp" data-wow-delay="0.3s">
+                                Trải nghiệm gaming và đồ họa chuyên nghiệp với card đồ họa mạnh mẽ nhất. Nâng cấp PC của
+                                bạn ngay hôm nay.
+                            </p>
+                            <div class="hero-buttons wow fadeInUp" data-wow-delay="0.4s">
+                                <a href="/shop?category=<%= typeof categories !== 'undefined' && categories.find(c => c.name === 'Card đồ họa VGA') ? categories.find(c => c.name === 'Card đồ họa VGA')._id : '' %>"
+                                    class="btn btn-hero btn-primary-hero">
+                                    <i class="fas fa-microchip me-2"></i>Xem Card Đồ Họa
+                                </a>
+                                <a href="/shop" class="btn btn-hero btn-outline-hero">
+                                    <i class="fas fa-th me-2"></i>Tất Cả Sản Phẩm
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Hero Carousel Styles */
+        .hero-carousel-wrapper {
+            position: relative;
+            min-height: 600px;
+        }
+
+        .hero-slide-banner {
+            position: relative;
+            min-height: 600px;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            align-items: center;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.4) 100%);
+            z-index: 1;
+        }
+
+        .hero-content-banner {
+            position: relative;
+            z-index: 2;
+            color: white;
+            padding: 60px 20px;
+        }
+
+        .hero-badge {
+            margin-bottom: 25px;
+        }
+
+        .badge-custom {
+            display: inline-block;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .badge-banner {
+            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+            color: white;
+        }
+
+        .hero-title-banner {
+            font-size: 4rem;
+            font-weight: 900;
+            line-height: 1.2;
+            margin-bottom: 25px;
+            text-shadow: 3px 5px 20px rgba(0, 0, 0, 0.5);
+            color: white;
+        }
+
+        .hero-description-banner {
+            font-size: 1.3rem;
+            line-height: 1.7;
+            margin-bottom: 40px;
+            color: rgba(255, 255, 255, 0.95);
+            text-shadow: 1px 2px 10px rgba(0, 0, 0, 0.5);
+            max-width: 600px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn-hero {
+            padding: 18px 40px;
+            font-size: 1.15rem;
+            font-weight: 700;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            border: none;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-primary-hero {
+            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+            color: white;
+        }
+
+        .btn-primary-hero:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 35px rgba(255, 107, 53, 0.5);
+            color: white;
+        }
+
+        .btn-outline-hero {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .btn-outline-hero:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-4px);
+            color: white;
+            border-color: rgba(255, 255, 255, 0.6);
+            box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2);
+        }
+
+        @media (max-width: 991px) {
+            .hero-title-banner {
+                font-size: 2.5rem;
+            }
+
+            .hero-description-banner {
+                font-size: 1.1rem;
+            }
+
+            .hero-content-banner {
+                padding: 40px 20px;
+            }
+
+            .btn-hero {
+                padding: 15px 30px;
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .hero-title-banner {
+                font-size: 2rem;
+            }
+
+            .hero-description-banner {
+                font-size: 1rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+            }
+
+            .btn-hero {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+
+
+    <!-- Services Start -->
+    <div class="container-fluid px-0">
+        <div class="row g-0">
+            <div class="col-6 col-md-4 col-lg-2 border-start border-end wow fadeInUp" data-wow-delay="0.1s">
+                <div class="p-4">
+                    <div class="d-inline-flex align-items-center">
+                        <i class="fa fa-sync-alt fa-2x text-primary"></i>
+                        <div class="ms-4">
+                            <h6 class="text-uppercase mb-2">Free Return</h6>
+                            <p class="mb-0">30 days money back guarantee!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2 border-end wow fadeInUp" data-wow-delay="0.2s">
+                <div class="p-4">
+                    <div class="d-flex align-items-center">
+                        <i class="fab fa-telegram-plane fa-2x text-primary"></i>
+                        <div class="ms-4">
+                            <h6 class="text-uppercase mb-2">Free Shipping</h6>
+                            <p class="mb-0">Free shipping on all order</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2 border-end wow fadeInUp" data-wow-delay="0.3s">
+                <div class="p-4">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-life-ring fa-2x text-primary"></i>
+                        <div class="ms-4">
+                            <h6 class="text-uppercase mb-2">Support 24/7</h6>
+                            <p class="mb-0">We support online 24 hrs a day</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2 border-end wow fadeInUp" data-wow-delay="0.4s">
+                <div class="p-4">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-credit-card fa-2x text-primary"></i>
+                        <div class="ms-4">
+                            <h6 class="text-uppercase mb-2">Receive Gift Card</h6>
+                            <p class="mb-0">Recieve gift all over oder $50</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2 border-end wow fadeInUp" data-wow-delay="0.5s">
+                <div class="p-4">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-lock fa-2x text-primary"></i>
+                        <div class="ms-4">
+                            <h6 class="text-uppercase mb-2">Secure Payment</h6>
+                            <p class="mb-0">We Value Your Security</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2 border-end wow fadeInUp" data-wow-delay="0.6s">
+                <div class="p-4">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-blog fa-2x text-primary"></i>
+                        <div class="ms-4">
+                            <h6 class="text-uppercase mb-2">Online Service</h6>
+                            <p class="mb-0">Free return products in 30 days</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Services End -->
+
+    <!-- Our Products Start -->
+    <div class="container-fluid product py-5">
+        <div class="container py-5">
+            <div class="tab-class">
+                <div class="row g-4">
+                    <div class="col-lg-4 text-start wow fadeInLeft" data-wow-delay="0.1s">
+                        <h1>Our Products</h1>
+                    </div>
+                </div>
+                <div class="tab-content">
+                    <div id="tab-1" class="tab-pane fade show p-0 active">
+                        <div class="row g-4">
+                            <% if (typeof featuredProducts !=='undefined' && featuredProducts.length> 0) { %>
+                                <% featuredProducts.forEach(product=> { %>
+                                    <div class="col-md-6 col-lg-4 col-xl-3">
+                                        <div class="product-item rounded wow fadeInUp" data-wow-delay="0.1s">
+                                            <div
+                                                class="product-item-inner border rounded <%= product.stock === 0 ? 'out-of-stock' : '' %>">
+                                                <div class="product-item-inner-item position-relative">
+                                                    <img src="<%= product.image_url || '/img/product-3.png' %>"
+                                                        class="img-fluid w-100 rounded-top" alt="<%= product.name %>">
+                                                    <% if (product.stock===0) { %>
+                                                        <div class="out-of-stock-overlay">
+                                                            <span class="out-of-stock-badge">
+                                                                <i class="fas fa-ban me-2"></i>Đã hết hàng
+                                                            </span>
+                                                        </div>
+                                                        <% } %>
+                                                            <div class="product-details">
+                                                                <a href="/single/<%= product._id %>"><i
+                                                                        class="fa fa-eye fa-1x"></i></a>
+                                                                <% if (product.stock> 0) { %>
+                                                                    <% if (typeof user !=='undefined' && user) { %>
+                                                                        <a href="javascript:void(0);"
+                                                                            onclick="addToCart('<%= product._id %>')"><i
+                                                                                class="fas fa-shopping-cart fa-1x"></i></a>
+                                                                        <% } else { %>
+                                                                            <a href="/auth/login"><i
+                                                                                    class="fas fa-shopping-cart fa-1x"></i></a>
+                                                                            <% } %>
+                                                                                <% } %>
+                                                            </div>
+                                                </div>
+                                                <div class="text-center rounded-bottom p-4">
+                                                    <a href="/shop?category=<%= product.category_id ? product.category_id._id : '' %>"
+                                                        class="d-block mb-2">
+                                                        <%= product.category_id ? product.category_id.name
+                                                            : 'Uncategorized' %>
+                                                    </a>
+                                                    <a href="/single/<%= product._id %>" class="d-block h4">
+                                                        <%= product.name %>
+                                                    </a>
+                                                    <span class="text-primary fs-5">
+                                                        <%= new Intl.NumberFormat('vi-VN').format(product.price) %> VNĐ
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <% }); %>
+                                        <% } else { %>
+                                            <div class="col-12">
+                                                <p class="text-center">No products available</p>
+                                            </div>
+                                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Our Products End -->
+
+    <script>
+        function addToCart(productId) {
+            fetch('/api/cart/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ product_id: productId, quantity: 1 })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Added to cart!');
+                        // Update cart icon with new count and total
+                        if (data.data && window.updateCartIcon) {
+                            window.updateCartIcon(data.data.cartCount, data.data.cartTotal);
+                        }
+                    }
+                });
+        }
+    </script>
+
+    <%- include('partials/footer') %>

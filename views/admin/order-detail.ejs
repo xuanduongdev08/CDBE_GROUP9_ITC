@@ -1,0 +1,231 @@
+<%- include('../partials/admin-header', { page: 'orders', title: 'Chi Tiết Đơn Hàng', user: typeof user !== 'undefined' ? user : null }) %>
+
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <a href="/admin/orders" class="btn btn-outline-secondary rounded-pill">
+                            <i class="fas fa-arrow-left me-2"></i>Quay lại
+                        </a>
+                    </div>
+
+                    <!-- Order Info Card -->
+                    <div class="card admin-card wow fadeInUp mb-4" data-wow-delay="0.1s">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="fas fa-info-circle me-2 text-primary"></i>Thông Tin Đơn Hàng
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <strong>Mã Đơn Hàng:</strong>
+                                    <p class="mb-0">#<%= order._id.toString().substring(0, 8) %></p>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <strong>Ngày Đặt:</strong>
+                                    <p class="mb-0"><%= order.order_date ? new Date(order.order_date).toLocaleString('vi-VN') : 'N/A' %></p>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <strong>Khách Hàng:</strong>
+                                    <p class="mb-0"><%= order.user_id ? order.user_id.full_name : 'Khách vãng lai' %></p>
+                                    <% if (order.user_id) { %>
+                                        <small class="text-muted"><%= order.user_id.email %></small>
+                                    <% } %>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <strong>Tổng Tiền:</strong>
+                                    <p class="mb-0 text-primary" style="font-size: 1.25rem; font-weight: bold;">
+                                        <%= order.total_amount ? new Intl.NumberFormat('vi-VN').format(order.total_amount) : '0' %> VNĐ
+                                    </p>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <strong>Trạng Thái:</strong>
+                                    <div class="mt-2">
+                                        <% 
+                                            const statusColors = {
+                                                'pending': 'warning',
+                                                'processing': 'info',
+                                                'shipped': 'primary',
+                                                'delivered': 'success',
+                                                'cancelled': 'danger'
+                                            };
+                                            const statusTexts = {
+                                                'pending': 'Chờ xử lý',
+                                                'processing': 'Đang xử lý',
+                                                'shipped': 'Đã giao hàng',
+                                                'delivered': 'Đã nhận',
+                                                'cancelled': 'Đã hủy'
+                                            };
+                                        %>
+                                        <select id="orderStatus" class="form-select form-select-sm" style="width: auto; display: inline-block;">
+                                            <option value="pending" <%= order.status === 'pending' ? 'selected' : '' %>>Chờ xử lý</option>
+                                            <option value="processing" <%= order.status === 'processing' ? 'selected' : '' %>>Đang xử lý</option>
+                                            <option value="shipped" <%= order.status === 'shipped' ? 'selected' : '' %>>Đã giao hàng</option>
+                                            <option value="delivered" <%= order.status === 'delivered' ? 'selected' : '' %>>Đã nhận</option>
+                                            <option value="cancelled" <%= order.status === 'cancelled' ? 'selected' : '' %>>Đã hủy</option>
+                                        </select>
+                                        <button onclick="updateOrderStatus()" class="btn btn-sm btn-primary ms-2 rounded-pill">
+                                            <i class="fas fa-save me-1"></i>Cập nhật
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <strong>Thanh Toán:</strong>
+                                    <div class="mt-2">
+                                        <select id="paymentStatus" class="form-select form-select-sm" style="width: auto; display: inline-block;">
+                                            <option value="unpaid" <%= order.payment_status === 'unpaid' ? 'selected' : '' %>>Chưa thanh toán</option>
+                                            <option value="paid" <%= order.payment_status === 'paid' ? 'selected' : '' %>>Đã thanh toán</option>
+                                            <option value="refunded" <%= order.payment_status === 'refunded' ? 'selected' : '' %>>Đã hoàn tiền</option>
+                                        </select>
+                                        <button onclick="updatePaymentStatus()" class="btn btn-sm btn-success ms-2 rounded-pill">
+                                            <i class="fas fa-save me-1"></i>Cập nhật
+                                        </button>
+                                    </div>
+                                </div>
+                                <% if (order.payment_method_id) { %>
+                                <div class="col-md-6 mb-3">
+                                    <strong>Phương Thức Thanh Toán:</strong>
+                                    <p class="mb-0"><%= order.payment_method_id.name %></p>
+                                </div>
+                                <% } %>
+                                <% if (order.shipping_method) { %>
+                                <div class="col-md-6 mb-3">
+                                    <strong>Phương Thức Vận Chuyển:</strong>
+                                    <p class="mb-0"><%= order.shipping_method %></p>
+                                </div>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Shipping Address Card -->
+                    <% if (order.address_id) { %>
+                    <div class="card admin-card wow fadeInUp mb-4" data-wow-delay="0.2s">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="fas fa-map-marker-alt me-2 text-primary"></i>Địa Chỉ Giao Hàng
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="mb-1"><strong><%= order.address_id.recipient_name %></strong></p>
+                            <p class="mb-1"><%= order.address_id.phone %></p>
+                            <p class="mb-0">
+                                <%= order.address_id.address_line %>, 
+                                <%= order.address_id.city %>, 
+                                <%= order.address_id.province %>
+                                <% if (order.address_id.postal_code) { %>
+                                    - <%= order.address_id.postal_code %>
+                                <% } %>
+                            </p>
+                        </div>
+                    </div>
+                    <% } %>
+
+                    <!-- Order Items Card -->
+                    <div class="card admin-card wow fadeInUp" data-wow-delay="0.3s">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="fas fa-shopping-bag me-2 text-primary"></i>Sản Phẩm Trong Đơn
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>STT</th>
+                                            <th>Sản Phẩm</th>
+                                            <th>Giá</th>
+                                            <th>Số Lượng</th>
+                                            <th>Thành Tiền</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% if (typeof orderItems !== 'undefined' && orderItems.length > 0) { %>
+                                            <% orderItems.forEach((item, index) => { %>
+                                                <tr>
+                                                    <td><strong><%= index + 1 %></strong></td>
+                                                    <td>
+                                                        <% if (item.product_id) { %>
+                                                            <strong><%= item.product_id.name %></strong>
+                                                        <% } else { %>
+                                                            <span class="text-muted">Sản phẩm đã bị xóa</span>
+                                                        <% } %>
+                                                    </td>
+                                                    <td><%= item.price ? new Intl.NumberFormat('vi-VN').format(item.price) : '0' %> VNĐ</td>
+                                                    <td><%= item.quantity || 0 %></td>
+                                                    <td><strong class="text-primary"><%= item.price && item.quantity ? new Intl.NumberFormat('vi-VN').format(item.price * item.quantity) : '0' %> VNĐ</strong></td>
+                                                </tr>
+                                            <% }); %>
+                                            <tr style="background-color: #f8f9fa;">
+                                                <td colspan="4" class="text-end"><strong>Tổng Cộng:</strong></td>
+                                                <td><strong class="text-primary" style="font-size: 1.1rem;"><%= order.total_amount ? new Intl.NumberFormat('vi-VN').format(order.total_amount) : '0' %> VNĐ</strong></td>
+                                            </tr>
+                                        <% } else { %>
+                                            <tr>
+                                                <td colspan="5" class="text-center py-5">
+                                                    <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+                                                    <p class="text-muted">Không có sản phẩm nào trong đơn hàng</p>
+                                                </td>
+                                            </tr>
+                                        <% } %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+<%- include('../partials/admin-footer') %>
+
+<script>
+function updateOrderStatus() {
+    const status = document.getElementById('orderStatus').value;
+    const orderId = '<%= order._id %>';
+    
+    fetch(`/admin/orders/${orderId}/status`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ status })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Cập nhật trạng thái đơn hàng thành công!');
+            location.reload();
+        } else {
+            alert('Lỗi: ' + (data.error || 'Không thể cập nhật trạng thái'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Có lỗi xảy ra khi cập nhật trạng thái');
+    });
+}
+
+function updatePaymentStatus() {
+    const payment_status = document.getElementById('paymentStatus').value;
+    const orderId = '<%= order._id %>';
+    
+    fetch(`/admin/orders/${orderId}/payment`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ payment_status })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Cập nhật trạng thái thanh toán thành công!');
+            location.reload();
+        } else {
+            alert('Lỗi: ' + (data.error || 'Không thể cập nhật trạng thái thanh toán'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Có lỗi xảy ra khi cập nhật trạng thái thanh toán');
+    });
+}
+</script>
+

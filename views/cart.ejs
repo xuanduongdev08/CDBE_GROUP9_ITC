@@ -1,0 +1,235 @@
+<%- include('partials/header', { page: 'cart' , categories: typeof categories !=='undefined' ? categories : [] }) %>
+
+    <!-- Single Page Header start -->
+    <div class="container-fluid page-header py-5">
+        <h1 class="text-center text-white display-6 wow fadeInUp" data-wow-delay="0.1s">Cart Page</h1>
+        <ol class="breadcrumb justify-content-center mb-0 wow fadeInUp" data-wow-delay="0.3s">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item"><a href="#">Pages</a></li>
+            <li class="breadcrumb-item active text-white">Cart Page</li>
+        </ol>
+    </div>
+    <!-- Single Page Header End -->
+
+    <!-- Cart Page Start -->
+    <div class="container-fluid py-5">
+        <div class="container py-5">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col" style="width: 50px;">
+                                <input type="checkbox" id="selectAll" class="form-check-input"
+                                    onchange="toggleSelectAll()">
+                            </th>
+                            <th scope="col" style="width: 100px;">Ảnh</th>
+                            <th scope="col">Tên sản phẩm</th>
+                            <th scope="col">Giá</th>
+                            <th scope="col">Số lượng</th>
+                            <th scope="col">Tổng</th>
+                            <th scope="col">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (typeof cartItems !=='undefined' && cartItems.length> 0) { %>
+                            <% let subtotal=0; %>
+                                <% cartItems.forEach(item=> { %>
+                                    <% const itemTotal=item.product_id.price * item.quantity; %>
+                                        <% subtotal +=itemTotal; %>
+                                            <tr>
+                                                <td class="align-middle">
+                                                    <input type="checkbox" class="form-check-input item-checkbox"
+                                                        value="<%= item._id %>" data-price="<%= itemTotal %>"
+                                                        onchange="updateSelectedTotal()" checked>
+                                                </td>
+                                                <td class="align-middle">
+                                                    <img src="<%= item.product_id.image_url || '/img/chuot1.jpg' %>"
+                                                        alt="<%= item.product_id.name %>" class="img-fluid rounded"
+                                                        style="width: 80px; height: 80px; object-fit: cover;">
+                                                </td>
+                                                <th scope="row" class="align-middle">
+                                                    <p class="mb-0">
+                                                        <%= item.product_id.name %>
+                                                    </p>
+                                                </th>
+                                                <td class="align-middle">
+                                                    <p class="mb-0">
+                                                        <%= new Intl.NumberFormat('vi-VN').format(item.product_id.price)
+                                                            %> VNĐ
+                                                    </p>
+                                                </td>
+                                                <td class="align-middle">
+                                                    <div class="input-group quantity" style="width: 100px;">
+                                                        <div class="input-group-btn">
+                                                            <button
+                                                                class="btn btn-sm btn-minus rounded-circle bg-light border"
+                                                                onclick="updateQuantity('<%= item._id %>', <%= item.quantity - 1 %>)">
+                                                                <i class="fa fa-minus"></i>
+                                                            </button>
+                                                        </div>
+                                                        <input type="text"
+                                                            class="form-control form-control-sm text-center border-0"
+                                                            value="<%= item.quantity %>" id="qty-<%= item._id %>">
+                                                        <div class="input-group-btn">
+                                                            <button
+                                                                class="btn btn-sm btn-plus rounded-circle bg-light border"
+                                                                onclick="updateQuantity('<%= item._id %>', <%= item.quantity + 1 %>)">
+                                                                <i class="fa fa-plus"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="align-middle">
+                                                    <p class="mb-0 fw-bold">
+                                                        <%= new Intl.NumberFormat('vi-VN').format(itemTotal) %> VNĐ
+                                                    </p>
+                                                </td>
+                                                <td class="align-middle">
+                                                    <button class="btn btn-md rounded-circle bg-light border"
+                                                        onclick="removeItem('<%= item._id %>')">
+                                                        <i class="fa fa-times text-danger"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            <% }); %>
+                                                <% } else { %>
+                                                    <tr>
+                                                        <td colspan="7" class="text-center py-5">
+                                                            <p>Giỏ hàng của bạn đang trống</p>
+                                                            <a href="/shop" class="btn btn-primary">Tiếp tục mua sắm</a>
+                                                        </td>
+                                                    </tr>
+                                                    <% } %>
+                    </tbody>
+                </table>
+            </div>
+            <div class="row g-4 justify-content-end mt-5">
+                <div class="col-8"></div>
+                <div class="col-sm-8 col-md-7 col-lg-6 col-xl-4">
+                    <div class="bg-light rounded">
+                        <div class="p-4">
+                            <h1 class="display-6 mb-4">Tổng <span class="fw-normal">giỏ hàng</span></h1>
+                            <div class="d-flex justify-content-between mb-4">
+                                <h5 class="mb-0 me-4">Tổng tất cả:</h5>
+                                <p class="mb-0">
+                                    <%= typeof total !=='undefined' ? new Intl.NumberFormat('vi-VN').format(total) : '0'
+                                        %> VNĐ
+                                </p>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <h5 class="mb-0 me-4">Phí vận chuyển</h5>
+                                <div>
+                                    <p class="mb-0">Miễn phí</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="py-4 mb-4 border-top border-bottom d-flex justify-content-between">
+                            <h5 class="mb-0 ps-4 me-4">Tổng thanh toán:</h5>
+                            <p class="mb-0 pe-4 fw-bold text-primary" id="selected-total">
+                                <%= typeof total !=='undefined' ? new Intl.NumberFormat('vi-VN').format(total) : '0' %>
+                                    VNĐ
+                            </p>
+                        </div>
+                        <% if (typeof cartItems !=='undefined' && cartItems.length> 0) { %>
+                            <button onclick="proceedCheckout()" id="checkout-btn"
+                                class="btn btn-primary rounded-pill px-4 py-3 text-uppercase mb-4 ms-4">
+                                Thanh toán
+                            </button>
+                            <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Cart Page End -->
+
+    <script>
+        // Tính tổng tiền các sản phẩm được chọn
+        function updateSelectedTotal() {
+            const checkboxes = document.querySelectorAll('.item-checkbox:checked');
+            let total = 0;
+            checkboxes.forEach(checkbox => {
+                total += parseFloat(checkbox.getAttribute('data-price'));
+            });
+
+            document.getElementById('selected-total').textContent =
+                new Intl.NumberFormat('vi-VN').format(total) + ' VNĐ';
+
+            // Cập nhật trạng thái nút thanh toán
+            const checkoutBtn = document.getElementById('checkout-btn');
+            if (checkoutBtn) {
+                if (checkboxes.length === 0) {
+                    checkoutBtn.disabled = true;
+                    checkoutBtn.classList.add('opacity-50');
+                } else {
+                    checkoutBtn.disabled = false;
+                    checkoutBtn.classList.remove('opacity-50');
+                }
+            }
+        }
+
+        // Chọn/bỏ chọn tất cả
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('selectAll');
+            const checkboxes = document.querySelectorAll('.item-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAll.checked;
+            });
+            updateSelectedTotal();
+        }
+
+        // Cập nhật giá trị khi số lượng thay đổi
+        function updateQuantity(itemId, newQuantity) {
+            if (newQuantity < 1) {
+                removeItem(itemId);
+                return;
+            }
+            fetch(`/api/cart/update/${itemId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ quantity: newQuantity })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    }
+                });
+        }
+
+        // Xóa sản phẩm
+        function removeItem(itemId) {
+            if (confirm('Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?')) {
+                fetch(`/api/cart/remove/${itemId}`, {
+                    method: 'DELETE'
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            location.reload();
+                        }
+                    });
+            }
+        }
+
+        // Thanh toán các sản phẩm được chọn
+        function proceedCheckout() {
+            const checkboxes = document.querySelectorAll('.item-checkbox:checked');
+            if (checkboxes.length === 0) {
+                alert('Vui lòng chọn ít nhất một sản phẩm để thanh toán!');
+                return;
+            }
+
+            // Chuyển đến checkout (không cần query parameter, sẽ checkout tất cả items trong cart)
+            window.location.href = '/checkout';
+        }
+
+        // Khởi tạo tổng tiền khi trang load
+        document.addEventListener('DOMContentLoaded', function () {
+            updateSelectedTotal();
+        });
+    </script>
+
+    <%- include('partials/footer') %>

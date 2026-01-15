@@ -1,0 +1,148 @@
+<%- include('partials/header', { page: 'order-success' , categories: typeof categories !=='undefined' ? categories : []
+    }) %>
+
+    <!-- Order Success Header -->
+    <div class="container-fluid page-header py-5">
+        <h1 class="text-center text-white display-6 wow fadeInUp" data-wow-delay="0.1s">Đặt Hàng Thành Công</h1>
+        <ol class="breadcrumb justify-content-center mb-0 wow fadeInUp" data-wow-delay="0.3s">
+            <li class="breadcrumb-item"><a href="/">Trang Chủ</a></li>
+            <li class="breadcrumb-item active text-white">Đặt Hàng Thành Công</li>
+        </ol>
+    </div>
+
+    <!-- Order Success Content -->
+    <div class="container-fluid py-5">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <!-- Success Icon -->
+                    <div class="text-center mb-5 wow fadeInUp" data-wow-delay="0.1s">
+                        <div class="success-icon mb-4">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <h2 class="mb-3">Cảm ơn bạn đã đặt hàng tại PLT Shop!</h2>
+                        <p class="text-muted fs-5">Đơn hàng của bạn đã được tiếp nhận và đang được xử lý.</p>
+                    </div>
+
+                    <!-- Order Info Card -->
+                    <div class="card border-0 shadow-sm mb-4 wow fadeInUp" data-wow-delay="0.2s">
+                        <div class="card-body p-4">
+                            <div class="row align-items-center">
+                                <div class="col-md-6 mb-3 mb-md-0">
+                                    <h5 class="mb-2">Mã Đơn Hàng</h5>
+                                    <p class="order-code mb-0">
+                                        <%= orderCode %>
+                                    </p>
+                                </div>
+                                <div class="col-md-6 text-md-end">
+                                    <p class="text-muted mb-1">Tổng tiền</p>
+                                    <h4 class="text-primary mb-0">
+                                        <%= new Intl.NumberFormat('vi-VN').format(totalAmount) %> VNĐ
+                                    </h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Email Notification -->
+                    <div class="alert alert-info d-flex align-items-center mb-4 wow fadeInUp" data-wow-delay="0.3s">
+                        <i class="fas fa-envelope me-3 fs-4"></i>
+                        <div>
+                            <strong>Email xác nhận đã được gửi!</strong><br>
+                            <small>Chúng tôi đã gửi email xác nhận đơn hàng đến địa chỉ email của bạn.</small>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="row g-3 wow fadeInUp" data-wow-delay="0.4s">
+                        <div class="col-md-6">
+                            <a href="/" class="btn btn-primary btn-lg w-100 rounded-pill py-3">
+                                <i class="fas fa-home me-2"></i> Về Trang Chủ
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="/orders/<%= orderId %>"
+                                class="btn btn-outline-primary btn-lg w-100 rounded-pill py-3">
+                                <i class="fas fa-receipt me-2"></i> Xem Chi Tiết Đơn Hàng
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Additional Info -->
+                    <div class="card border-0 bg-light mt-4 wow fadeInUp" data-wow-delay="0.5s">
+                        <div class="card-body p-4">
+                            <h5 class="mb-3"><i class="fas fa-info-circle me-2 text-primary"></i> Thông Tin Quan Trọng
+                            </h5>
+                            <ul class="list-unstyled mb-0">
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    Đơn hàng của bạn đang được xử lý và sẽ được giao trong 3-5 ngày làm việc.
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    Bạn có thể theo dõi trạng thái đơn hàng trong mục "Đơn Hàng Của Tôi".
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    Nếu có bất kỳ thắc mắc nào, vui lòng liên hệ với chúng tôi qua trang <a
+                                        href="/contact">Liên Hệ</a>.
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .success-icon i {
+            font-size: 120px;
+            color: #28a745;
+            animation: scaleIn 0.5s ease-out;
+        }
+
+        @keyframes scaleIn {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .order-code {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ff6b35;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 2px;
+        }
+
+        .card {
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .btn-lg {
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-lg:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+    </style>
+
+    <%- include('partials/footer') %>

@@ -1,0 +1,31 @@
+<%- include('../partials/header', { page: 'login', categories: typeof categories !== 'undefined' ? categories : [] }) %>
+
+    <div class="container-fluid py-5">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-md-6 col-lg-4">
+                    <div class="bg-light rounded p-4">
+                        <h3 class="mb-4">Login</h3>
+                        <% if (typeof error !== 'undefined' && error) { %>
+                            <div class="alert alert-danger"><%= error %></div>
+                        <% } %>
+                        <form action="/auth/login" method="POST">
+                            <div class="mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" name="email" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Password</label>
+                                <input type="password" class="form-control" name="password" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100 mb-3">Login</button>
+                            <p class="text-center mb-0">Don't have an account? <a href="/auth/register">Register</a></p>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<%- include('../partials/footer') %>
+

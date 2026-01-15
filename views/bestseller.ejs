@@ -1,0 +1,77 @@
+<%- include('partials/header', { page: 'bestseller', categories: typeof categories !== 'undefined' ? categories : [] }) %>
+
+    <!-- Single Page Header start -->
+    <div class="container-fluid page-header py-5">
+        <h1 class="text-center text-white display-6 wow fadeInUp" data-wow-delay="0.1s">Bestseller</h1>
+        <ol class="breadcrumb justify-content-center mb-0 wow fadeInUp" data-wow-delay="0.3s">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item active text-white">Bestseller</li>
+        </ol>
+    </div>
+    <!-- Single Page Header End -->
+
+    <!-- Bestseller Start -->
+    <div class="container-fluid product py-5">
+        <div class="container py-5">
+            <div class="row g-4">
+                <% if (typeof products !== 'undefined' && products.length > 0) { %>
+                    <% products.forEach(product => { %>
+                        <div class="col-md-6 col-lg-4 col-xl-3">
+                            <div class="product-item rounded">
+                                <div class="product-item-inner border rounded">
+                                    <div class="product-item-inner-item">
+                                        <img src="<%= product.image_url || '/img/product-3.png' %>" class="img-fluid w-100 rounded-top" alt="<%= product.name %>">
+                                        <div class="product-details">
+                                            <a href="/single/<%= product._id %>"><i class="fa fa-eye fa-1x"></i></a>
+                                            <% if (typeof user !== 'undefined' && user) { %>
+                                                <a href="javascript:void(0);" onclick="addToCart('<%= product._id %>')"><i class="fas fa-shopping-cart fa-1x"></i></a>
+                                            <% } else { %>
+                                                <a href="/auth/login"><i class="fas fa-shopping-cart fa-1x"></i></a>
+                                            <% } %>
+                                        </div>
+                                    </div>
+                                    <div class="text-center rounded-bottom p-4">
+                                        <a href="/shop?category=<%= product.category_id ? product.category_id._id : '' %>" class="d-block mb-2">
+                                            <%= product.category_id ? product.category_id.name : 'Uncategorized' %>
+                                        </a>
+                                        <a href="/single/<%= product._id %>" class="d-block h5"><%= product.name %></a>
+                                        <span class="text-primary fs-5"><%= new Intl.NumberFormat('vi-VN').format(product.price) %> VNĐ</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <% }); %>
+                <% } else { %>
+                    <div class="col-12">
+                        <p class="text-center">No products available</p>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+    <!-- Bestseller End -->
+
+<script>
+function addToCart(productId) {
+    fetch('/api/cart/add', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ product_id: productId, quantity: 1 })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Added to cart!');
+            // Update cart icon with new count and total
+            if (data.data && window.updateCartIcon) {
+                window.updateCartIcon(data.data.cartCount, data.data.cartTotal);
+            }
+        }
+    });
+}
+</script>
+
+<%- include('partials/footer') %>
+

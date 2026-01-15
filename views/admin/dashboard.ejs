@@ -1,0 +1,170 @@
+<%- include('../partials/admin-header', { page: 'dashboard', title: 'Dashboard', user: typeof user !== 'undefined' ? user : null }) %>
+
+                    <!-- Statistics Cards -->
+                    <div class="row mb-4">
+                        <div class="col-md-3 mb-3">
+                            <div class="stat-card primary wow fadeInUp" data-wow-delay="0.1s" style="background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%); height: 100%; min-height: 150px; display: flex; flex-direction: column;">
+                                <div class="d-flex justify-content-between align-items-start" style="flex: 1;">
+                                    <div class="flex-grow-1">
+                                        <h6 class="text-white mb-3" style="opacity: 0.9; font-size: 0.9rem; font-weight: 500; margin-bottom: 1rem;">Total Orders</h6>
+                                        <h2 class="text-white mb-0" style="font-size: 2.5rem; font-weight: bold; line-height: 1;"><%= typeof totalOrders !== 'undefined' ? totalOrders : 0 %></h2>
+                                    </div>
+                                    <i class="fas fa-shopping-cart" style="font-size: 3rem; opacity: 0.3; align-self: flex-start;"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="stat-card success wow fadeInUp" data-wow-delay="0.2s" style="background: linear-gradient(135deg, #ff6b35 0%, #ff8e53 100%); height: 100%; min-height: 150px; display: flex; flex-direction: column;">
+                                <div class="d-flex justify-content-between align-items-start" style="flex: 1;">
+                                    <div class="flex-grow-1">
+                                        <h6 class="text-white mb-3" style="opacity: 0.9; font-size: 0.9rem; font-weight: 500; margin-bottom: 1rem;">Total Revenue</h6>
+                                        <h2 class="text-white mb-1" style="font-size: 2rem; font-weight: bold; line-height: 1.2;">
+                                            <%= typeof totalRevenue !== 'undefined' ? new Intl.NumberFormat('vi-VN').format(totalRevenue) : '0' %>
+                                        </h2>
+                                        <div class="d-flex align-items-center gap-2 mt-1">
+                                            <i class="fas fa-dollar-sign text-white" style="opacity: 0.8; font-size: 0.9rem;"></i>
+                                            <span class="text-white" style="opacity: 0.9; font-size: 0.9rem;">VNĐ</span>
+                                        </div>
+                                    </div>
+                                    <i class="fas fa-dollar-sign" style="font-size: 3rem; opacity: 0.3; align-self: flex-start;"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="stat-card warning wow fadeInUp" data-wow-delay="0.3s" style="background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%); height: 100%; min-height: 150px; display: flex; flex-direction: column;">
+                                <div class="d-flex justify-content-between align-items-start" style="flex: 1;">
+                                    <div class="flex-grow-1">
+                                        <h6 class="text-white mb-3" style="opacity: 0.9; font-size: 0.9rem; font-weight: 500; margin-bottom: 1rem;">Total Products</h6>
+                                        <h2 class="text-white mb-0" style="font-size: 2.5rem; font-weight: bold; line-height: 1;"><%= typeof totalProducts !== 'undefined' ? totalProducts : 0 %></h2>
+                                    </div>
+                                    <i class="fas fa-box" style="font-size: 3rem; opacity: 0.3; align-self: flex-start;"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="stat-card info wow fadeInUp" data-wow-delay="0.4s" style="background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%); height: 100%; min-height: 150px; display: flex; flex-direction: column;">
+                                <div class="d-flex justify-content-between align-items-start" style="flex: 1;">
+                                    <div class="flex-grow-1">
+                                        <h6 class="text-white mb-3" style="opacity: 0.9; font-size: 0.9rem; font-weight: 500; margin-bottom: 1rem;">Total Users</h6>
+                                        <h2 class="text-white mb-0" style="font-size: 2.5rem; font-weight: bold; line-height: 1;"><%= typeof totalUsers !== 'undefined' ? totalUsers : 0 %></h2>
+                                    </div>
+                                    <i class="fas fa-users" style="font-size: 3rem; opacity: 0.3; align-self: flex-start;"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Monthly Revenue -->
+                    <div class="card admin-card wow fadeInUp" data-wow-delay="0.5s" style="border: none; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                        <div class="card-header" style="background: white; border-bottom: 1px solid #f0f0f0; padding: 1.5rem;">
+                            <h5 class="mb-0" style="color: #333; font-weight: 600;">
+                                <i class="fas fa-chart-line me-2" style="color: #ff6b35;"></i>Monthly Revenue
+                            </h5>
+                        </div>
+                        <div class="card-body" style="padding: 1.5rem;">
+                            <% if (typeof monthlyRevenue !== 'undefined' && monthlyRevenue.length > 0) { %>
+                                <div class="table-responsive">
+                                    <table class="table table-hover mb-0">
+                                        <thead>
+                                            <tr style="background: #f8f9fa;">
+                                                <th style="border: none; padding: 1rem; color: #666; font-weight: 600;">Month</th>
+                                                <th style="border: none; padding: 1rem; color: #666; font-weight: 600;">Revenue</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% monthlyRevenue.forEach(item => { %>
+                                                <tr style="border-bottom: 1px solid #f0f0f0;">
+                                                    <td style="padding: 1rem; color: #333; font-weight: 500;"><%= item.month %></td>
+                                                    <td style="padding: 1rem;">
+                                                        <strong style="color: #ff6b35; font-size: 1.1rem;">
+                                                            <%= new Intl.NumberFormat('vi-VN').format(item.revenue) %> VNĐ
+                                                        </strong>
+                                                    </td>
+                                                </tr>
+                                            <% }); %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            <% } else { %>
+                                <p class="text-muted text-center py-5 mb-0">Chưa có dữ liệu doanh thu</p>
+                            <% } %>
+                        </div>
+                    </div>
+
+                    <!-- Recent Orders -->
+                    <div class="card admin-card mt-4 wow fadeInUp" data-wow-delay="0.6s">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="fas fa-shopping-cart me-2 text-primary"></i>Recent Orders
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Mã Đơn</th>
+                                            <th>Khách Hàng</th>
+                                            <th>Ngày Đặt</th>
+                                            <th>Tổng Tiền</th>
+                                            <th>Trạng Thái</th>
+                                            <th>Thanh Toán</th>
+                                            <th>Thao Tác</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% if (typeof recentOrders !== 'undefined' && recentOrders.length > 0) { %>
+                                            <% recentOrders.forEach(order => { %>
+                                                <tr>
+                                                    <td><strong>#<%= order._id.toString().substring(0, 8) %></strong></td>
+                                                    <td><%= order.user_id ? order.user_id.full_name : 'Khách vãng lai' %></td>
+                                                    <td><%= new Date(order.order_date).toLocaleDateString('vi-VN') %></td>
+                                                    <td><strong class="text-primary"><%= new Intl.NumberFormat('vi-VN').format(order.total_amount) %> VNĐ</strong></td>
+                                                    <td>
+                                                        <% 
+                                                            const statusColors = {
+                                                                'pending': 'warning',
+                                                                'processing': 'info',
+                                                                'shipped': 'primary',
+                                                                'delivered': 'success',
+                                                                'cancelled': 'danger'
+                                                            };
+                                                            const statusTexts = {
+                                                                'pending': 'Chờ xử lý',
+                                                                'processing': 'Đang xử lý',
+                                                                'shipped': 'Đã giao hàng',
+                                                                'delivered': 'Đã nhận',
+                                                                'cancelled': 'Đã hủy'
+                                                            };
+                                                        %>
+                                                        <span class="badge bg-<%= statusColors[order.status] || 'secondary' %> rounded-pill">
+                                                            <%= statusTexts[order.status] || order.status %>
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="badge bg-<%= order.payment_status === 'paid' ? 'success' : 'warning' %> rounded-pill">
+                                                            <%= order.payment_status === 'paid' ? 'Đã thanh toán' : 'Chưa thanh toán' %>
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <a href="/admin/orders/<%= order._id %>" class="btn btn-sm btn-primary rounded-pill">
+                                                            <i class="fas fa-eye me-1"></i>Xem
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            <% }); %>
+                                        <% } else { %>
+                                            <tr>
+                                                <td colspan="7" class="text-center py-5">
+                                                    <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                                                    <p class="text-muted">Chưa có đơn hàng nào</p>
+                                                </td>
+                                            </tr>
+                                        <% } %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+<%- include('../partials/admin-footer') %>

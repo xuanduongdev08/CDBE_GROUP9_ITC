@@ -1,0 +1,362 @@
+<%- include('partials/header', { page: 'checkout' , categories: typeof categories !=='undefined' ? categories : [] }) %>
+
+    <!-- Single Page Header start -->
+    <div class="container-fluid page-header py-5">
+        <h1 class="text-center text-white display-6 wow fadeInUp" data-wow-delay="0.1s">Checkout</h1>
+        <ol class="breadcrumb justify-content-center mb-0 wow fadeInUp" data-wow-delay="0.3s">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item active text-white">Checkout</li>
+        </ol>
+    </div>
+    <!-- Single Page Header End -->
+
+    <!-- Checkout Start -->
+    <div class="container-fluid py-5">
+        <div class="container py-5">
+            <form id="checkoutForm" action="/api/orders/create" method="POST">
+                <div class="row g-4">
+                    <div class="col-lg-8">
+                        <h4 class="mb-4">Shipping Address</h4>
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label class="form-label">Recipient Name</label>
+                                <input type="text" class="form-control" name="recipient_name" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Phone</label>
+                                <input type="text" class="form-control" name="phone" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Address Line</label>
+                                <input type="text" class="form-control" name="address_line" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">City</label>
+                                <input type="text" class="form-control" name="city" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Province</label>
+                                <input type="text" class="form-control" name="province" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Postal Code</label>
+                                <input type="text" class="form-control" name="postal_code">
+                            </div>
+                        </div>
+
+                        <h4 class="mb-4 mt-5">Phương thức thanh toán</h4>
+                        <% if (typeof paymentMethods !=='undefined' && paymentMethods.length> 0) { %>
+                            <% paymentMethods.forEach(method=> { %>
+                                <div
+                                    class="form-check mb-3 border rounded p-3 <%= method.type === 'momo' ? 'momo-payment' : '' %>">
+                                    <input class="form-check-input payment-method-radio" type="radio"
+                                        name="payment_method_id" value="<%= method._id %>" id="payment<%= method._id %>"
+                                        data-type="<%= method.type || 'cod' %>"
+                                        <%=method._id.toString()===(paymentMethods[0]._id.toString()) ? 'checked' : ''
+                                        %>>
+                                    <label class="form-check-label w-100" for="payment<%= method._id %>">
+                                        <div class="d-flex align-items-center">
+                                            <% if (method.type==='momo' ) { %>
+                                                <i class="fas fa-mobile-alt text-danger me-2"
+                                                    style="font-size: 1.5rem;"></i>
+                                                <% } else if (method.type==='cod' ) { %>
+                                                    <i class="fas fa-money-bill-wave text-success me-2"
+                                                        style="font-size: 1.5rem;"></i>
+                                                    <% } else if (method.type==='bank' ) { %>
+                                                        <i class="fas fa-university text-primary me-2"
+                                                            style="font-size: 1.5rem;"></i>
+                                                        <% } %>
+                                                            <div>
+                                                                <strong>
+                                                                    <%= method.name %>
+                                                                </strong>
+                                                                <br>
+                                                                <small class="text-muted">
+                                                                    <%= method.description %>
+                                                                </small>
+                                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+
+                                <!-- QR Code Modal for Momo -->
+                                <% if (method.type==='momo' ) { %>
+                                    <div id="momoQRModal<%= method._id %>" class="modal fade" tabindex="-1"
+                                        style="display: none;">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Quét mã QR để thanh toán</h5>
+                                                    <button type="button" class="btn-close"
+                                                        data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <div class="modal-body text-center">
+                                                    <p class="mb-3">Mở ứng dụng Momo và quét mã QR bên dưới</p>
+                                                    <div id="momoQRCode<%= method._id %>" class="mb-3"></div>
+                                                    <p class="text-muted"><strong>Tổng tiền: <%= typeof total
+                                                                !=='undefined' ? new
+                                                                Intl.NumberFormat('vi-VN').format(total) : '0' %>
+                                                                VNĐ</strong></p>
+                                                    <p class="text-danger"><small>Vui lòng thanh toán trong vòng 15
+                                                            phút</small></p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-bs-dismiss="modal">Đóng</button>
+                                                    <button type="button" class="btn btn-primary"
+                                                        onclick="confirmMomoPayment('<%= method._id %>')">Đã thanh
+                                                        toán</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <% } %>
+                                        <% }); %>
+                                            <% } %>
+
+                                                <!-- Bank Transfer Info -->
+                                                <div id="bankInfo" class="border rounded p-3 mt-3"
+                                                    style="display: none;">
+                                                    <h6 class="mb-3">Thông tin chuyển khoản:</h6>
+                                                    <p class="mb-2"><strong>Ngân hàng:</strong> Vietcombank</p>
+                                                    <p class="mb-2"><strong>Số tài khoản:</strong> 1234567890</p>
+                                                    <p class="mb-2"><strong>Chủ tài khoản:</strong> PLT SHOP</p>
+                                                    <p class="mb-0"><strong>Nội dung chuyển khoản:</strong> <span
+                                                            id="bankContent"></span></p>
+                                                </div>
+
+                                                <div class="form-group mt-4">
+                                                    <label class="form-label">Shipping Method</label>
+                                                    <input type="text" class="form-control" name="shipping_method"
+                                                        value="Standard Shipping">
+                                                </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="bg-light rounded p-4">
+                            <h4 class="mb-4">Order Summary</h4>
+                            <% if (typeof cartItems !=='undefined' && cartItems.length> 0) { %>
+                                <% cartItems.forEach(item=> { %>
+                                    <div class="d-flex justify-content-between mb-3">
+                                        <span>
+                                            <%= item.product_id.name %> x <%= item.quantity %>
+                                        </span>
+                                        <span>
+                                            <%= new Intl.NumberFormat('vi-VN').format(item.product_id.price *
+                                                item.quantity) %> VNĐ
+                                        </span>
+                                    </div>
+                                    <% }); %>
+                                        <% } %>
+                                            <hr>
+                                            <div class="d-flex justify-content-between">
+                                                <h5>Total:</h5>
+                                                <h5>
+                                                    <%= typeof total !=='undefined' ? new
+                                                        Intl.NumberFormat('vi-VN').format(total) : '0' %> VNĐ
+                                                </h5>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary w-100 mt-4">Place
+                                                Order</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Checkout End -->
+
+    <!-- QR Code Library -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+
+    <script>
+        let selectedPaymentType = 'cod';
+        let momoQRCodeInstances = {};
+
+        // Initialize QR codes for Momo
+        document.addEventListener('DOMContentLoaded', function () {
+            const momoMethods = document.querySelectorAll('.payment-method-radio[data-type="momo"]');
+            momoMethods.forEach(radio => {
+                const methodId = radio.value;
+                const total = <%= typeof total !== 'undefined' ? total : 0 %>;
+                generateMomoQR(methodId, total);
+            });
+
+            // Set initial payment type
+            const checkedRadio = document.querySelector('.payment-method-radio:checked');
+            if (checkedRadio) {
+                selectedPaymentType = checkedRadio.getAttribute('data-type');
+                updatePaymentUI(selectedPaymentType);
+            }
+
+            // Listen for payment method changes
+            document.querySelectorAll('.payment-method-radio').forEach(radio => {
+                radio.addEventListener('change', function () {
+                    selectedPaymentType = this.getAttribute('data-type');
+                    updatePaymentUI(selectedPaymentType);
+                });
+            });
+        });
+
+        function generateMomoQR(methodId, amount) {
+            // Momo QR code format: momo://transfer?phone=0912345678&amount=100000&note=Order123
+            const phone = '0912345678'; // Số điện thoại Momo của shop
+            const note = 'PLT_SHOP_' + Date.now();
+            const momoURL = `momo://transfer?phone=${phone}&amount=${amount}&note=${note}`;
+
+            const qrContainer = document.getElementById('momoQRCode' + methodId);
+            if (qrContainer && !momoQRCodeInstances[methodId]) {
+                qrContainer.innerHTML = '';
+                momoQRCodeInstances[methodId] = new QRCode(qrContainer, {
+                    text: momoURL,
+                    width: 256,
+                    height: 256,
+                    colorDark: '#000000',
+                    colorLight: '#ffffff',
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+            }
+        }
+
+        function updatePaymentUI(paymentType) {
+            const bankInfo = document.getElementById('bankInfo');
+            const total = <%= typeof total !== 'undefined' ? total : 0 %>;
+
+            if (paymentType === 'bank') {
+                bankInfo.style.display = 'block';
+                document.getElementById('bankContent').textContent = 'PLT_SHOP_' + Date.now() + '_' + total;
+            } else {
+                bankInfo.style.display = 'none';
+            }
+        }
+
+        async function confirmMomoPayment(methodId) {
+            if (confirm('Bạn đã thanh toán thành công qua Momo?')) {
+                // Close modal
+                const modalElement = document.getElementById('momoQRModal' + methodId);
+                const modal = bootstrap.Modal.getInstance(modalElement);
+                if (modal) {
+                    modal.hide();
+                }
+
+                // Get form data and add payment confirmed flag
+                const form = document.getElementById('checkoutForm');
+                const formData = new FormData(form);
+
+                // Process order with payment confirmed
+                await processOrder(formData, true);
+            }
+        }
+
+        let isSubmitting = false;
+
+        document.getElementById('checkoutForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            // Prevent double submit
+            if (isSubmitting) {
+                console.log('Already submitting, please wait...');
+                return;
+            }
+
+            isSubmitting = true;
+            const submitBtn = this.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Processing...';
+            }
+
+            try {
+                const formData = new FormData(this);
+                const selectedPaymentId = formData.get('payment_method_id');
+                const selectedPaymentRadio = document.querySelector(`input[value="${selectedPaymentId}"]`);
+                const paymentType = selectedPaymentRadio ? selectedPaymentRadio.getAttribute('data-type') : 'cod';
+
+                // If Momo, show QR modal first
+                if (paymentType === 'momo') {
+                    const modalElement = document.getElementById('momoQRModal' + selectedPaymentId);
+                    if (modalElement) {
+                        const modal = new bootstrap.Modal(modalElement);
+                        modal.show();
+                        isSubmitting = false;
+                        if (submitBtn) {
+                            submitBtn.disabled = false;
+                            submitBtn.textContent = 'Place Order';
+                        }
+                        return; // Don't submit yet, wait for user confirmation
+                    }
+                }
+
+                // For COD and Bank Transfer, proceed directly
+                await processOrder(formData);
+            } catch (error) {
+                console.error('Order error:', error);
+                isSubmitting = false;
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Place Order';
+                }
+            }
+        });
+
+        async function processOrder(formData, paymentConfirmed = false) {
+            const addressData = {
+                recipient_name: formData.get('recipient_name'),
+                phone: formData.get('phone'),
+                address_line: formData.get('address_line'),
+                city: formData.get('city'),
+                province: formData.get('province'),
+                postal_code: formData.get('postal_code')
+            };
+
+            // Create address first
+            const addressResponse = await fetch('/api/addresses/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(addressData)
+            });
+
+            const addressResult = await addressResponse.json();
+
+            if (!addressResult.success) {
+                alert('Lỗi khi tạo địa chỉ');
+                return;
+            }
+
+            // Create order
+            const orderData = {
+                address_id: addressResult.address_id,
+                payment_method_id: formData.get('payment_method_id'),
+                shipping_method: formData.get('shipping_method'),
+                payment_confirmed: paymentConfirmed
+            };
+
+            const orderResponse = await fetch('/api/orders/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(orderData)
+            });
+
+            const orderResult = await orderResponse.json();
+
+            if (orderResult.success) {
+                // Redirect to order success page
+                console.log('Order created successfully:', orderResult.order_id);
+                window.location.href = '/order-success/' + orderResult.order_id;
+            } else {
+                isSubmitting = false;
+                const submitBtn = document.querySelector('button[type="submit"]');
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Place Order';
+                }
+                alert('Lỗi khi đặt hàng: ' + (orderResult.error || 'Unknown error'));
+            }
+        }
+    </script>
+
+    <%- include('partials/footer') %>

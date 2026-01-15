@@ -1,0 +1,275 @@
+<%- include('partials/header') %>
+
+<!-- Page Header Start -->
+<div class="container-fluid page-header py-5 mb-5 wow fadeIn" data-wow-delay="0.1s">
+    <div class="container text-center py-5">
+        <h1 class="display-3 text-white mb-4 animated slideInDown">Chi Tiết Đơn Hàng</h1>
+        <nav aria-label="breadcrumb animated slideInDown">
+            <ol class="breadcrumb justify-content-center mb-0">
+                <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+                <li class="breadcrumb-item"><a href="/orders">Đơn hàng</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Chi tiết</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<!-- Page Header End -->
+
+<!-- Order Detail Start -->
+<div class="container-fluid py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 mb-4">
+                <div class="d-flex gap-2 flex-wrap">
+                    <a href="/orders" class="btn btn-outline-secondary rounded-pill">
+                        <i class="fas fa-arrow-left me-2"></i>Quay lại danh sách đơn hàng
+                    </a>
+                    <% if (order.status === 'pending' || order.status === 'processing') { %>
+                        <button class="btn btn-danger rounded-pill cancel-order-btn" data-order-id="<%= order._id %>">
+                            <i class="fas fa-times me-2"></i>Hủy đơn hàng
+                        </button>
+                    <% } %>
+                    <% if (order.status === 'cancelled' || order.status === 'delivered') { %>
+                        <button class="btn btn-success rounded-pill reorder-btn" data-order-id="<%= order._id %>">
+                            <i class="fas fa-redo me-2"></i>Mua lại
+                        </button>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <!-- Order Info -->
+            <div class="col-lg-8 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-info-circle me-2"></i>Thông Tin Đơn Hàng
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <strong>Mã Đơn Hàng:</strong>
+                                <p class="mb-0">#<%= order._id.toString().substring(0, 8) %></p>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Ngày Đặt:</strong>
+                                <p class="mb-0"><%= new Date(order.order_date).toLocaleString('vi-VN') %></p>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <strong>Trạng Thái:</strong>
+                                <div class="mt-2">
+                                    <% 
+                                        const statusColors = {
+                                            'pending': 'warning',
+                                            'processing': 'info',
+                                            'shipped': 'primary',
+                                            'delivered': 'success',
+                                            'cancelled': 'danger'
+                                        };
+                                        const statusTexts = {
+                                            'pending': 'Chờ xử lý',
+                                            'processing': 'Đang xử lý',
+                                            'shipped': 'Đang giao hàng',
+                                            'delivered': 'Đã nhận',
+                                            'cancelled': 'Đã hủy'
+                                        };
+                                    %>
+                                    <span class="badge bg-<%= statusColors[order.status] || 'secondary' %> rounded-pill px-3 py-2" style="font-size: 1rem;">
+                                        <%= statusTexts[order.status] || order.status %>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Thanh Toán:</strong>
+                                <div class="mt-2">
+                                    <span class="badge bg-<%= order.payment_status === 'paid' ? 'success' : order.payment_status === 'refunded' ? 'danger' : 'warning' %> rounded-pill px-3 py-2" style="font-size: 1rem;">
+                                        <%= order.payment_status === 'paid' ? 'Đã thanh toán' : order.payment_status === 'refunded' ? 'Đã hoàn tiền' : 'Chưa thanh toán' %>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <% if (order.shipping_method) { %>
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <strong>Phương Thức Giao Hàng:</strong>
+                                    <p class="mb-0"><%= order.shipping_method %></p>
+                                </div>
+                            </div>
+                        <% } %>
+                        <% if (order.payment_method_id) { %>
+                            <div class="row">
+                                <div class="col-12">
+                                    <strong>Phương Thức Thanh Toán:</strong>
+                                    <p class="mb-0"><%= order.payment_method_id.name %></p>
+                                    <% if (order.payment_method_id.description) { %>
+                                        <small class="text-muted"><%= order.payment_method_id.description %></small>
+                                    <% } %>
+                                </div>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+
+                <!-- Shipping Address -->
+                <% if (order.address_id) { %>
+                    <div class="card shadow-sm mt-4">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-map-marker-alt me-2"></i>Địa Chỉ Giao Hàng
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="mb-1"><strong><%= order.address_id.recipient_name %></strong></p>
+                            <p class="mb-1"><i class="fas fa-phone me-2"></i><%= order.address_id.phone %></p>
+                            <p class="mb-0">
+                                <i class="fas fa-home me-2"></i>
+                                <%= order.address_id.address_line %>, 
+                                <%= order.address_id.city %>, 
+                                <%= order.address_id.province %>
+                                <% if (order.address_id.postal_code) { %>
+                                    - <%= order.address_id.postal_code %>
+                                <% } %>
+                            </p>
+                        </div>
+                    </div>
+                <% } %>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="col-lg-4">
+                <div class="card shadow-sm sticky-top" style="top: 20px;">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-shopping-cart me-2"></i>Sản Phẩm
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <% if (typeof orderItems !== 'undefined' && orderItems.length > 0) { %>
+                            <% orderItems.forEach((item) => { %>
+                                <div class="d-flex mb-3 pb-3 border-bottom">
+                                    <% if (item.productSnapshot && item.productSnapshot.image) { %>
+                                        <img src="<%= item.productSnapshot.image %>" 
+                                             alt="<%= item.productSnapshot.name %>" 
+                                             class="img-fluid rounded" 
+                                             style="width: 60px; height: 60px; object-fit: cover;">
+                                    <% } else { %>
+                                        <div class="bg-light rounded d-flex align-items-center justify-content-center" 
+                                             style="width: 60px; height: 60px;">
+                                            <i class="fas fa-image text-muted"></i>
+                                        </div>
+                                    <% } %>
+                                    <div class="ms-3 flex-grow-1">
+                                        <h6 class="mb-1" style="font-size: 0.9rem;">
+                                            <%= item.productSnapshot ? item.productSnapshot.name : 'Sản phẩm đã xóa' %>
+                                        </h6>
+                                        <p class="mb-0 text-muted" style="font-size: 0.85rem;">
+                                            Số lượng: <%= item.quantity %> x 
+                                            <%= new Intl.NumberFormat('vi-VN').format(item.productSnapshot ? item.productSnapshot.price : item.price) %> VNĐ
+                                        </p>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        <% } else { %>
+                            <p class="text-muted">Không có sản phẩm</p>
+                        <% } %>
+                        
+                        <div class="mt-3 pt-3 border-top">
+                            <div class="d-flex justify-content-between mb-2">
+                                <strong>Tổng Tiền:</strong>
+                                <strong class="text-primary" style="font-size: 1.25rem;">
+                                    <%= new Intl.NumberFormat('vi-VN').format(order.total_amount) %> VNĐ
+                                </strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Order Detail End -->
+
+<script>
+// Cancel Order
+document.querySelectorAll('.cancel-order-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const orderId = this.getAttribute('data-order-id');
+        if (!confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?')) {
+            return;
+        }
+        
+        const btnElement = this;
+        btnElement.disabled = true;
+        btnElement.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang xử lý...';
+        
+        fetch(`/orders/${orderId}/cancel`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Đơn hàng đã được hủy thành công!');
+                location.reload();
+            } else {
+                alert('Lỗi: ' + data.error);
+                btnElement.disabled = false;
+                btnElement.innerHTML = '<i class="fas fa-times me-2"></i>Hủy đơn hàng';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Có lỗi xảy ra. Vui lòng thử lại.');
+            btnElement.disabled = false;
+            btnElement.innerHTML = '<i class="fas fa-times me-2"></i>Hủy đơn hàng';
+        });
+    });
+});
+
+// Reorder
+document.querySelectorAll('.reorder-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const orderId = this.getAttribute('data-order-id');
+        
+        const btnElement = this;
+        btnElement.disabled = true;
+        btnElement.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang thêm vào giỏ hàng...';
+        
+        fetch(`/orders/${orderId}/reorder`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                if (confirm(data.message + '\n\nBạn có muốn xem giỏ hàng không?')) {
+                    window.location.href = '/cart';
+                } else {
+                    location.reload();
+                }
+            } else {
+                alert('Lỗi: ' + data.error);
+                btnElement.disabled = false;
+                btnElement.innerHTML = '<i class="fas fa-redo me-2"></i>Mua lại';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Có lỗi xảy ra. Vui lòng thử lại.');
+            btnElement.disabled = false;
+            btnElement.innerHTML = '<i class="fas fa-redo me-2"></i>Mua lại';
+        });
+    });
+});
+</script>
+
+<%- include('partials/footer') %>
+

@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>
+        <%= typeof title !=='undefined' ? title + ' - PLT Shop' : 'PLT Shop - Cửa Hàng Điện Tử' %>
+    </title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="keywords">
+    <meta content="" name="description">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Icon Font Stylesheet -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="/lib/animate/animate.min.css" rel="stylesheet">
+    <link href="/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="/css/style.css" rel="stylesheet">
+
+    <style>
+        #spinner.show {
+            display: flex !important;
+        }
+
+        #spinner:not(.show) {
+            display: none !important;
+        }
+    </style>
+    <script>
+        // Remove spinner on page load (vanilla JS, no jQuery needed)
+        function removeSpinner() {
+            var spinner = document.getElementById('spinner');
+            if (spinner && spinner.classList.contains('show')) {
+                spinner.classList.remove('show');
+            }
+        }
+        // Remove spinner immediately on DOM ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', removeSpinner);
+        } else {
+            removeSpinner();
+        }
+        // Also remove on window load
+        window.addEventListener('load', removeSpinner);
+    </script>
+</head>
+
+<body>
+
+    <!-- Spinner Start -->
+    <div id="spinner"
+        class="bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center show">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+    <!-- Spinner End -->
+
+    <div class="container-fluid px-5 py-4 d-none d-lg-block">
+        <div class="row gx-0 align-items-center text-center">
+            <div class="col-md-4 col-lg-3 text-center text-lg-start">
+                <div class="d-inline-flex align-items-center">
+                    <a href="/" class="navbar-brand p-0">
+                        <h1 class="display-5 text-primary m-0"><i
+                                class="fas fa-shopping-bag text-secondary me-2"></i>PLT Shop</h1>
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-4 col-lg-6 text-center">
+                <div class="position-relative ps-4">
+                    <form action="/shop" method="GET" class="d-flex border rounded-pill">
+                        <input class="form-control border-0 rounded-pill w-100 py-3" type="text" name="search"
+                            placeholder="Search Looking For?">
+                        <select class="form-select text-dark border-0 border-start rounded-0 p-3" style="width: 200px;"
+                            name="category">
+                            <option value="">All Category</option>
+                            <% if (typeof categories !=='undefined' ) { %>
+                                <% categories.forEach(category=> { %>
+                                    <option value="<%= category._id %>">
+                                        <%= category.name %>
+                                    </option>
+                                    <% }); %>
+                                        <% } %>
+                        </select>
+                        <button type="submit" class="btn btn-primary rounded-pill py-3 px-5" style="border: 0;"><i
+                                class="fas fa-search"></i></button>
+                    </form>
+                </div>
+            </div>
+            <div class="col-md-4 col-lg-3 text-center text-lg-end">
+                <div class="d-inline-flex align-items-center gap-3">
+                    <!-- Shopping Cart Button -->
+                    <a href="<%= typeof user !== 'undefined' && user ? '/cart' : '/auth/login' %>"
+                        class="position-relative text-muted d-flex align-items-center justify-content-center"
+                        style="width: 45px; height: 45px; border-radius: 50%; border: 1px solid #dee2e6; transition: all 0.3s; text-decoration: none;"
+                        onmouseover="this.style.backgroundColor='#f8f9fa'; this.style.borderColor='#0d6efd';"
+                        onmouseout="this.style.backgroundColor='transparent'; this.style.borderColor='#dee2e6';">
+                        <i class="fas fa-shopping-cart"></i>
+                        <% if (typeof cartCount !=='undefined' && cartCount> 0) { %>
+                            <span class="position-absolute badge rounded-pill bg-danger"
+                                style="top: -5px; right: -5px; font-size: 0.65rem; padding: 0.2em 0.4em; min-width: 18px; line-height: 1;">
+                                <%= cartCount> 99 ? '99+' : cartCount %>
+                            </span>
+                            <% } %>
+                    </a>
+
+                    <!-- Cart Total -->
+                    <div class="d-flex flex-column align-items-start ms-2">
+                        <span class="text-muted small" style="font-size: 0.75rem; line-height: 1;">Tổng tiền</span>
+                        <span class="text-dark fw-bold" id="cart-total" style="font-size: 1rem; line-height: 1.2;">
+                            <%= typeof cartTotal !=='undefined' ? new Intl.NumberFormat('vi-VN').format(cartTotal)
+                                + ' VNĐ' : '0 VNĐ' %>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Topbar End -->
+
+    <!-- Navbar & Hero Start -->
+    <div class="container-fluid nav-bar p-0">
+        <div class="row gx-0 bg-primary px-5 align-items-center">
+            <div class="col-lg-3 d-none d-lg-block">
+                <nav class="navbar navbar-light position-relative" style="width: 250px;">
+                    <button class="navbar-toggler border-0 fs-4 w-100 px-0 text-start" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#allCat">
+                        <h4 class="m-0"><i class="fa fa-bars me-2"></i>All Categories</h4>
+                    </button>
+                    <div class="collapse navbar-collapse rounded-bottom" id="allCat">
+                        <div class="navbar-nav ms-auto py-0">
+                            <ul class="list-unstyled categories-bars">
+                                <% if (typeof categories !=='undefined' ) { %>
+                                    <% categories.forEach(category=> { %>
+                                        <li>
+                                            <div class="categories-bars-item">
+                                                <a href="/shop?category=<%= category._id %>">
+                                                    <%= category.name %>
+                                                </a>
+                                            </div>
+                                        </li>
+                                        <% }); %>
+                                            <% } %>
+                            </ul>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+            <div class="col-12 col-lg-9">
+                <nav class="navbar navbar-expand-lg navbar-light bg-primary ">
+                    <a href="/" class="navbar-brand d-block d-lg-none">
+                        <h1 class="display-5 text-secondary m-0"><i class="fas fa-shopping-bag text-white me-2"></i>PLT
+                            Shop</h1>
+                    </a>
+                    <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#navbarCollapse">
+                        <span class="fa fa-bars fa-1x"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarCollapse">
+                        <div class="navbar-nav ms-auto py-0">
+                            <a href="/"
+                                class="nav-item nav-link <%= typeof page !== 'undefined' && page === 'home' ? 'active' : '' %>">Home</a>
+                            <a href="/shop"
+                                class="nav-item nav-link <%= typeof page !== 'undefined' && page === 'shop' ? 'active' : '' %>">Shop</a>
+
+                            <a href="/contact"
+                                class="nav-item nav-link me-2 <%= typeof page !== 'undefined' && page === 'contact' ? 'active' : '' %>">Contact</a>
+                        </div>
+                        <div class="dropdown mb-3 mb-md-3 mb-lg-0">
+                            <% if (typeof user !=='undefined' && user && !user.role) { %>
+                                <!-- Đã đăng nhập user -->
+                                <button class="btn btn-secondary rounded-pill py-2 px-4 px-lg-3 dropdown-toggle"
+                                    type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fa fa-user me-2"></i>
+                                    <%= user.full_name %>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                    <li><a class="dropdown-item" href="/orders"><i class="fas fa-shopping-bag me-2"></i>
+                                            Đơn hàng của tôi</a></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li><a class="dropdown-item" href="/auth/logout"><i
+                                                class="fa fa-sign-out-alt me-2"></i> Đăng xuất</a></li>
+                                </ul>
+                                <% } else { %>
+                                    <!-- Chưa đăng nhập - hiển thị nút Tài khoản -->
+                                    <button class="btn btn-primary rounded-pill py-2 px-4 px-lg-3 dropdown-toggle"
+                                        type="button" id="accountDropdown" data-bs-toggle="dropdown"
+                                        aria-expanded="false">
+                                        <i class="fa fa-user me-2"></i> Tài khoản
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountDropdown">
+                                        <li><a class="dropdown-item" href="/auth/login"><i
+                                                    class="fa fa-sign-in-alt me-2"></i> Đăng nhập</a></li>
+                                        <li>
+                                            <hr class="dropdown-divider">
+                                        </li>
+                                        <li><a class="dropdown-item" href="/auth/register"><i
+                                                    class="fa fa-user-plus me-2"></i> Đăng ký</a></li>
+                                    </ul>
+                                    <% } %>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <!-- Navbar & Hero End -->
+
+    <script>
+        // Global function to update cart icon
+        window.updateCartIcon = function (count, total) {
+            // Update cart badge
+            const cartLink = document.querySelector('a[href*="/cart"]');
+            if (cartLink) {
+                // Remove existing badge
+                const existingBadge = cartLink.querySelector('.badge');
+                if (existingBadge) {
+                    existingBadge.remove();
+                }
+
+                // Add new badge if count > 0
+                if (count > 0) {
+                    const badge = document.createElement('span');
+                    badge.className = 'position-absolute badge rounded-pill bg-danger';
+                    badge.style.cssText = 'top: -5px; right: -5px; font-size: 0.65rem; padding: 0.2em 0.4em; min-width: 18px; line-height: 1;';
+                    badge.textContent = count > 99 ? '99+' : count;
+                    cartLink.appendChild(badge);
+                }
+            }
+
+            // Update cart total
+            const cartTotalElement = document.getElementById('cart-total');
+            if (cartTotalElement) {
+                cartTotalElement.textContent = new Intl.NumberFormat('vi-VN').format(total) + ' VNĐ';
+            }
+        };
+
+        // Load cart info on page load
+        async function loadCartInfo() {
+            try {
+                const response = await fetch('/api/cart/count');
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.count !== undefined && data.total !== undefined) {
+                        window.updateCartIcon(data.count, data.total);
+                    }
+                }
+            } catch (error) {
+                console.log('Could not load cart info:', error);
+                // Silently fail if user is not logged in
+            }
+        }
+
+        // Load cart info when page is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', loadCartInfo);
+        } else {
+            loadCartInfo();
+        }
+    </script>

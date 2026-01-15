@@ -1,0 +1,248 @@
+<%- include('../partials/admin-header', { page: 'admins', title: 'Quản Lý Admin & Nhân Viên', user: typeof user !== 'undefined' ? user : null }) %>
+
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3 class="mb-0"></h3>
+                        <a href="/admin/admins/new" class="btn btn-primary rounded-pill">
+                            <i class="fas fa-plus me-2"></i>Thêm Admin/Nhân Viên
+                        </a>
+                    </div>
+
+                    <div class="card admin-card wow fadeInUp" data-wow-delay="0.1s">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="fas fa-user-shield me-2 text-primary"></i>Danh Sách Admin & Nhân Viên
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 80px;">STT</th>
+                                            <th>Username</th>
+                                            <th>Họ Tên</th>
+                                            <th>Phân Quyền</th>
+                                            <th>Ngày Tạo</th>
+                                            <th>Thao Tác</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% if (typeof admins !== 'undefined' && admins.length > 0) { %>
+                                            <% admins.forEach((admin, index) => { %>
+                                                <tr>
+                                                    <td><strong class="text-primary"><%= index + 1 %></strong></td>
+                                                    <td>
+                                                        <span class="badge bg-primary rounded-pill">
+                                                            <i class="fas fa-user-shield me-1"></i><%= admin.username %>
+                                                        </span>
+                                                    </td>
+                                                    <td><%= admin.full_name || admin.username %></td>
+                                                    <td>
+                                                        <% if (admin.role === 'admin') { %>
+                                                            <span class="badge bg-danger rounded-pill">
+                                                                <i class="fas fa-crown me-1"></i>Admin
+                                                            </span>
+                                                        <% } else { %>
+                                                            <span class="badge bg-info rounded-pill">
+                                                                <i class="fas fa-user-tie me-1"></i>Nhân Viên
+                                                            </span>
+                                                        <% } %>
+                                                    </td>
+                                                    <td><%= new Date(admin.created_at).toLocaleDateString('vi-VN') %></td>
+                                                    <td>
+                                                        <div class="d-flex gap-2 align-items-center" style="flex-wrap: nowrap;">
+                                                            <% if (user.role === 'admin') { %>
+                                                                <button onclick="editPermissions('<%= admin._id %>', '<%= admin.username %>')" class="btn btn-sm btn-info rounded-pill" style="white-space: nowrap;" title="Phân quyền">
+                                                                    <i class="fas fa-shield-alt me-1"></i>Phân quyền
+                                                                </button>
+                                                            <% } %>
+                                                            <% if (admin._id.toString() !== user._id.toString() && user.role === 'admin') { %>
+                                                                <button onclick="deleteAdmin('<%= admin._id %>')" class="btn btn-sm btn-danger rounded-pill" style="white-space: nowrap;">
+                                                                    <i class="fas fa-trash me-1"></i>Xóa
+                                                                </button>
+                                                            <% } else if (admin._id.toString() === user._id.toString()) { %>
+                                                                <span class="badge bg-success rounded-pill">Tài khoản hiện tại</span>
+                                                            <% } %>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            <% }); %>
+                                        <% } else { %>
+                                            <tr>
+                                                <td colspan="6" class="text-center py-5">
+                                                    <i class="fas fa-user-shield fa-3x text-muted mb-3"></i>
+                                                    <p class="text-muted">Chưa có admin/nhân viên nào</p>
+                                                    <a href="/admin/admins/new" class="btn btn-primary rounded-pill">
+                                                        <i class="fas fa-plus me-2"></i>Tạo Admin Đầu Tiên
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        <% } %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+<%- include('../partials/admin-footer') %>
+
+<!-- Permissions Modal -->
+<div class="modal fade" id="permissionsModal" tabindex="-1" aria-labelledby="permissionsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="permissionsModalLabel">Phân Quyền</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-3"><strong>Nhân viên:</strong> <span id="permissionAdminName"></span></p>
+                <div id="permissionsContent">
+                    <!-- Permissions will be loaded here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" onclick="savePermissions()">Lưu</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentAdminId = null;
+
+function editPermissions(adminId, adminName) {
+    currentAdminId = adminId;
+    document.getElementById('permissionAdminName').textContent = adminName;
+    
+    fetch(`/admin/admins/${adminId}/permissions`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                displayPermissions(data.permissions);
+                const modal = new bootstrap.Modal(document.getElementById('permissionsModal'));
+                modal.show();
+            } else {
+                alert('Lỗi: ' + (data.message || 'Không thể tải phân quyền'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Có lỗi xảy ra khi tải phân quyền');
+        });
+}
+
+function displayPermissions(permissions) {
+    const modules = {
+        products: { name: 'Sản Phẩm', actions: ['view', 'create', 'update', 'delete'] },
+        categories: { name: 'Danh Mục', actions: ['view', 'create', 'update', 'delete'] },
+        orders: { name: 'Đơn Hàng', actions: ['view', 'update', 'delete'] },
+        users: { name: 'Người Dùng', actions: ['view', 'update', 'delete'] },
+        contacts: { name: 'Liên Hệ', actions: ['view', 'update', 'delete'] },
+        inventory: { name: 'Tồn Kho', actions: ['view', 'update'] },
+        reports: { name: 'Báo Cáo', actions: ['view'] }
+    };
+    
+    const actionLabels = {
+        view: 'Xem',
+        create: 'Thêm',
+        update: 'Sửa',
+        delete: 'Xóa'
+    };
+    
+    let html = '<div class="row">';
+    
+    Object.keys(modules).forEach(module => {
+        const moduleInfo = modules[module];
+        html += `<div class="col-md-6 mb-4">
+            <h6 class="fw-bold mb-3">${moduleInfo.name}</h6>`;
+        
+        moduleInfo.actions.forEach(action => {
+            const checked = permissions[module] && permissions[module][action] ? 'checked' : '';
+            html += `<div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" 
+                       id="perm_${module}_${action}" 
+                       data-module="${module}" 
+                       data-action="${action}" 
+                       ${checked}>
+                <label class="form-check-label" for="perm_${module}_${action}">
+                    ${actionLabels[action]}
+                </label>
+            </div>`;
+        });
+        
+        html += '</div>';
+    });
+    
+    html += '</div>';
+    document.getElementById('permissionsContent').innerHTML = html;
+}
+
+function savePermissions() {
+    const checkboxes = document.querySelectorAll('#permissionsContent input[type="checkbox"]');
+    const permissions = {
+        products: { view: false, create: false, update: false, delete: false },
+        categories: { view: false, create: false, update: false, delete: false },
+        orders: { view: false, update: false, delete: false },
+        users: { view: false, update: false, delete: false },
+        contacts: { view: false, update: false, delete: false },
+        inventory: { view: false, update: false },
+        reports: { view: false }
+    };
+    
+    checkboxes.forEach(checkbox => {
+        const module = checkbox.getAttribute('data-module');
+        const action = checkbox.getAttribute('data-action');
+        if (checkbox.checked && permissions[module]) {
+            permissions[module][action] = true;
+        }
+    });
+    
+    fetch(`/admin/admins/${currentAdminId}/permissions`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ permissions })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Cập nhật phân quyền thành công!');
+            bootstrap.Modal.getInstance(document.getElementById('permissionsModal')).hide();
+            location.reload();
+        } else {
+            alert('Lỗi: ' + (data.message || 'Không thể cập nhật phân quyền'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Có lỗi xảy ra khi cập nhật phân quyền');
+    });
+}
+
+function deleteAdmin(id) {
+    if (confirm('Bạn có chắc chắn muốn xóa admin/nhân viên này? Hành động này không thể hoàn tác!')) {
+        fetch(`/admin/admins/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Xóa thành công!');
+                location.reload();
+            } else {
+                alert('Lỗi: ' + (data.error || 'Không thể xóa'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Có lỗi xảy ra khi xóa');
+        });
+    }
+}
+</script>
+

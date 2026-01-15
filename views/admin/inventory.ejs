@@ -1,0 +1,204 @@
+<%- include('../partials/admin-header', { page: 'inventory', title: 'Inventory Management', user: typeof user !== 'undefined' ? user : null }) %>
+
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <div class="stat-card primary">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="text-white-50 mb-2">Total Products</h6>
+                                        <h2 class="text-white mb-0"><%= stats.totalProducts %></h2>
+                                    </div>
+                                    <i class="fas fa-box fa-2x text-white-50"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card warning">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="text-white-50 mb-2">Low Stock</h6>
+                                        <h2 class="text-white mb-0"><%= stats.lowStock %></h2>
+                                    </div>
+                                    <i class="fas fa-exclamation-triangle fa-2x text-white-50"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card danger">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="text-white-50 mb-2">Out of Stock</h6>
+                                        <h2 class="text-white mb-0"><%= stats.outOfStock %></h2>
+                                    </div>
+                                    <i class="fas fa-times-circle fa-2x text-white-50"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card success">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="text-white-50 mb-2">Total Stock</h6>
+                                        <h2 class="text-white mb-0"><%= stats.totalStock %></h2>
+                                    </div>
+                                    <i class="fas fa-warehouse fa-2x text-white-50"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card admin-card wow fadeInUp" data-wow-delay="0.1s">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="fas fa-box-open me-2 text-primary"></i>Inventory List
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>STT</th>
+                                            <th>Hình Ảnh</th>
+                                            <th>Tên Sản Phẩm</th>
+                                            <th>Danh Mục</th>
+                                            <th>Giá</th>
+                                            <th>Tồn Kho</th>
+                                            <th>Trạng Thái</th>
+                                            <th>Thao Tác</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% if (typeof products !== 'undefined' && products.length > 0) { %>
+                                            <% products.forEach((product, index) => { %>
+                                                <tr>
+                                                    <td><strong><%= index + 1 %></strong></td>
+                                                    <td>
+                                                        <% 
+                                                            let imageUrl = product.image_url || '/img/product-3.png';
+                                                            if (imageUrl && !imageUrl.startsWith('/') && !imageUrl.startsWith('http')) {
+                                                                imageUrl = '/' + imageUrl;
+                                                            }
+                                                        %>
+                                                        <img src="<%= imageUrl %>" alt="<%= product.name %>" 
+                                                             style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;"
+                                                             onerror="this.src='/img/product-3.png'">
+                                                    </td>
+                                                    <td><strong><%= product.name %></strong></td>
+                                                    <td><%= product.category_id ? product.category_id.name : 'N/A' %></td>
+                                                    <td><strong class="text-primary"><%= new Intl.NumberFormat('vi-VN').format(product.price) %> VNĐ</strong></td>
+                                                    <td>
+                                                        <% if (product.stock === 0) { %>
+                                                            <span class="badge bg-danger rounded-pill">Hết hàng</span>
+                                                        <% } else if (product.stock < 10) { %>
+                                                            <span class="badge bg-warning rounded-pill"><%= product.stock %> sản phẩm</span>
+                                                        <% } else { %>
+                                                            <span class="badge bg-success rounded-pill"><%= product.stock %> sản phẩm</span>
+                                                        <% } %>
+                                                    </td>
+                                                    <td>
+                                                        <% if (product.stock === 0) { %>
+                                                            <span class="badge bg-danger rounded-pill">Out of Stock</span>
+                                                        <% } else if (product.stock < 10) { %>
+                                                            <span class="badge bg-warning rounded-pill">Low Stock</span>
+                                                        <% } else { %>
+                                                            <span class="badge bg-success rounded-pill">In Stock</span>
+                                                        <% } %>
+                                                    </td>
+                                                    <td>
+                                                        <div class="d-flex gap-2 align-items-center" style="flex-wrap: nowrap;">
+                                                            <button onclick="openUpdateStockModal('<%= product._id %>', '<%= product.name %>', <%= product.stock %>)" class="btn btn-sm btn-primary rounded-pill" style="white-space: nowrap;" title="Cập nhật tồn kho">
+                                                                <i class="fas fa-edit me-1"></i>Cập nhật
+                                                            </button>
+                                                            <a href="/admin/products/<%= product._id %>?from=inventory" class="btn btn-sm btn-info rounded-pill" style="white-space: nowrap;" title="Xem chi tiết">
+                                                                <i class="fas fa-eye me-1"></i>Xem
+                                                            </a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            <% }); %>
+                                        <% } else { %>
+                                            <tr>
+                                                <td colspan="8" class="text-center py-5">
+                                                    <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+                                                    <p class="text-muted">Chưa có sản phẩm nào</p>
+                                                </td>
+                                            </tr>
+                                        <% } %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+<%- include('../partials/admin-footer') %>
+
+<!-- Update Stock Modal -->
+<div class="modal fade" id="updateStockModal" tabindex="-1" aria-labelledby="updateStockModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateStockModalLabel">Cập Nhật Tồn Kho</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-3"><strong>Sản phẩm:</strong> <span id="stockProductName"></span></p>
+                <div class="mb-3">
+                    <label for="stockQuantity" class="form-label">Số lượng tồn kho:</label>
+                    <input type="number" class="form-control" id="stockQuantity" min="0" step="1" required>
+                    <small class="text-muted">Số lượng hiện tại: <span id="currentStock"></span></small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-primary" onclick="updateStock()">Cập nhật</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentProductId = null;
+
+function openUpdateStockModal(productId, productName, currentStock) {
+    currentProductId = productId;
+    document.getElementById('stockProductName').textContent = productName;
+    document.getElementById('currentStock').textContent = currentStock;
+    document.getElementById('stockQuantity').value = currentStock;
+    
+    const modal = new bootstrap.Modal(document.getElementById('updateStockModal'));
+    modal.show();
+}
+
+function updateStock() {
+    const quantity = parseInt(document.getElementById('stockQuantity').value);
+    
+    if (isNaN(quantity) || quantity < 0) {
+        alert('Vui lòng nhập số lượng hợp lệ (>= 0)');
+        return;
+    }
+    
+    fetch(`/admin/products/${currentProductId}/stock`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ stock: quantity })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Cập nhật tồn kho thành công!');
+            bootstrap.Modal.getInstance(document.getElementById('updateStockModal')).hide();
+            location.reload();
+        } else {
+            alert('Lỗi: ' + (data.error || 'Không thể cập nhật tồn kho'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Có lỗi xảy ra khi cập nhật tồn kho');
+    });
+}
+</script>
+

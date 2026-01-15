@@ -1,0 +1,285 @@
+<%- include('../partials/admin-header', { page: 'products', title: 'Chi Tiết Sản Phẩm', user: typeof user !== 'undefined' ? user : null }) %>
+
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <a href="<%= typeof backUrl !== 'undefined' ? backUrl : '/admin/products' %>" class="btn btn-outline-secondary rounded-pill mb-2">
+                                <i class="fas fa-arrow-left me-2"></i>Quay lại
+                            </a>
+                            <h3 class="mb-0 mt-2">
+                                <i class="fas fa-box me-2 text-primary"></i>Chi Tiết Sản Phẩm
+                            </h3>
+                        </div>
+                        <div>
+                            <a href="/admin/products/<%= product._id %>/edit" class="btn btn-warning rounded-pill">
+                                <i class="fas fa-edit me-2"></i>Sửa sản phẩm
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- Product Image and Basic Info -->
+                        <div class="col-md-4 mb-4">
+                            <div class="card admin-card">
+                                <div class="card-body text-center">
+                                    <% 
+                                        let imageUrl = product.image_url || '/img/product-3.png';
+                                        if (imageUrl && !imageUrl.startsWith('/') && !imageUrl.startsWith('http')) {
+                                            imageUrl = '/' + imageUrl;
+                                        }
+                                    %>
+                                    <img src="<%= imageUrl %>" 
+                                         alt="<%= product.name %>" 
+                                         class="img-fluid rounded mb-3"
+                                         style="max-height: 400px; width: 100%; object-fit: contain;"
+                                         onerror="this.src='/img/product-3.png'; this.onerror=null;">
+                                    <h4 class="mb-3"><%= product.name %></h4>
+                                    <div class="d-grid gap-2">
+                                        <a href="/single/<%= product._id %>" target="_blank" class="btn btn-outline-primary rounded-pill">
+                                            <i class="fas fa-external-link-alt me-2"></i>Xem trên website
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Product Details -->
+                        <div class="col-md-8 mb-4">
+                            <div class="card admin-card mb-4">
+                                <div class="card-header">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-info-circle me-2 text-primary"></i>Thông Tin Sản Phẩm
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <strong>Mã sản phẩm:</strong>
+                                            <p class="mb-0">#<%= product._id.toString().substring(0, 8) %></p>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <strong>Danh mục:</strong>
+                                            <p class="mb-0">
+                                                <% if (product.category_id) { %>
+                                                    <span class="badge bg-info rounded-pill"><%= product.category_id.name %></span>
+                                                <% } else { %>
+                                                    <span class="text-muted">Chưa phân loại</span>
+                                                <% } %>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <strong>Giá:</strong>
+                                            <p class="mb-0 text-primary" style="font-size: 1.25rem; font-weight: bold;">
+                                                <%= new Intl.NumberFormat('vi-VN').format(product.price) %> VNĐ
+                                            </p>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <strong>Tồn kho:</strong>
+                                            <p class="mb-0">
+                                                <% if (product.stock === 0) { %>
+                                                    <span class="badge bg-danger rounded-pill">Hết hàng</span>
+                                                <% } else if (product.stock < 10) { %>
+                                                    <span class="badge bg-warning rounded-pill"><%= product.stock %> sản phẩm</span>
+                                                <% } else { %>
+                                                    <span class="badge bg-success rounded-pill"><%= product.stock %> sản phẩm</span>
+                                                <% } %>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <strong>Đã bán:</strong>
+                                            <p class="mb-0">
+                                                <span class="badge bg-primary rounded-pill"><%= soldQuantity || 0 %> sản phẩm</span>
+                                            </p>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <strong>Ngày tạo:</strong>
+                                            <p class="mb-0"><%= new Date(product.created_at).toLocaleDateString('vi-VN') %></p>
+                                        </div>
+                                    </div>
+                                    <% if (product.description) { %>
+                                    <div class="mb-3">
+                                        <strong>Mô tả:</strong>
+                                        <p class="mb-0"><%= product.description %></p>
+                                    </div>
+                                    <% } %>
+                                    <% if (product.created_by_admin) { %>
+                                    <div class="mb-3">
+                                        <strong>Người tạo:</strong>
+                                        <p class="mb-0"><%= product.created_by_admin.username || product.created_by_admin.full_name || 'N/A' %></p>
+                                    </div>
+                                    <% } %>
+                                </div>
+                            </div>
+
+                            <!-- Quick Actions -->
+                            <div class="card admin-card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-cog me-2 text-primary"></i>Thao Tác Nhanh
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-flex gap-2 flex-wrap">
+                                        <button onclick="openUpdateStockModal('<%= product._id %>', '<%= product.name %>', <%= product.stock %>)" class="btn btn-primary rounded-pill">
+                                            <i class="fas fa-warehouse me-2"></i>Cập nhật tồn kho
+                                        </button>
+                                        <a href="/admin/products/<%= product._id %>/edit" class="btn btn-warning rounded-pill">
+                                            <i class="fas fa-edit me-2"></i>Chỉnh sửa
+                                        </a>
+                                        <button onclick="deleteProduct('<%= product._id %>')" class="btn btn-danger rounded-pill">
+                                            <i class="fas fa-trash me-2"></i>Xóa sản phẩm
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sales History -->
+                    <% if (typeof orderItems !== 'undefined' && orderItems.length > 0) { %>
+                    <div class="card admin-card">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="fas fa-chart-line me-2 text-primary"></i>Lịch Sử Bán Hàng
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>STT</th>
+                                            <th>Mã đơn</th>
+                                            <th>Khách hàng</th>
+                                            <th>Ngày bán</th>
+                                            <th>Số lượng</th>
+                                            <th>Giá</th>
+                                            <th>Thành tiền</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% orderItems.forEach((item, index) => { %>
+                                            <% if (item.order_id) { %>
+                                                <tr>
+                                                    <td><strong><%= index + 1 %></strong></td>
+                                                    <td>
+                                                        <a href="/admin/orders/<%= item.order_id._id %>" class="text-primary">
+                                                            #<%= item.order_id._id.toString().substring(0, 8) %>
+                                                        </a>
+                                                    </td>
+                                                    <td>
+                                                        <% if (item.order_id.user_id) { %>
+                                                            <%= item.order_id.user_id.full_name || item.order_id.user_id.email %>
+                                                        <% } else { %>
+                                                            <span class="text-muted">Khách vãng lai</span>
+                                                        <% } %>
+                                                    </td>
+                                                    <td><%= item.order_id.order_date ? new Date(item.order_id.order_date).toLocaleDateString('vi-VN') : 'N/A' %></td>
+                                                    <td><%= item.quantity || 0 %></td>
+                                                    <td><%= new Intl.NumberFormat('vi-VN').format(item.price || 0) %> VNĐ</td>
+                                                    <td><strong class="text-primary"><%= new Intl.NumberFormat('vi-VN').format((item.price || 0) * (item.quantity || 0)) %> VNĐ</strong></td>
+                                                </tr>
+                                            <% } %>
+                                        <% }); %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <% } %>
+
+<%- include('../partials/admin-footer') %>
+
+<!-- Update Stock Modal -->
+<div class="modal fade" id="updateStockModal" tabindex="-1" aria-labelledby="updateStockModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateStockModalLabel">Cập Nhật Tồn Kho</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-3"><strong>Sản phẩm:</strong> <span id="stockProductName"></span></p>
+                <div class="mb-3">
+                    <label for="stockQuantity" class="form-label">Số lượng tồn kho:</label>
+                    <input type="number" class="form-control" id="stockQuantity" min="0" step="1" required>
+                    <small class="text-muted">Số lượng hiện tại: <span id="currentStock"></span></small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-primary" onclick="updateStock()">Cập nhật</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentProductId = null;
+
+function openUpdateStockModal(productId, productName, currentStock) {
+    currentProductId = productId;
+    document.getElementById('stockProductName').textContent = productName;
+    document.getElementById('currentStock').textContent = currentStock;
+    document.getElementById('stockQuantity').value = currentStock;
+    
+    const modal = new bootstrap.Modal(document.getElementById('updateStockModal'));
+    modal.show();
+}
+
+function updateStock() {
+    const quantity = parseInt(document.getElementById('stockQuantity').value);
+    
+    if (isNaN(quantity) || quantity < 0) {
+        alert('Vui lòng nhập số lượng hợp lệ (>= 0)');
+        return;
+    }
+    
+    fetch(`/admin/products/${currentProductId}/stock`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ stock: quantity })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Cập nhật tồn kho thành công!');
+            bootstrap.Modal.getInstance(document.getElementById('updateStockModal')).hide();
+            location.reload();
+        } else {
+            alert('Lỗi: ' + (data.error || 'Không thể cập nhật tồn kho'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Có lỗi xảy ra khi cập nhật tồn kho');
+    });
+}
+
+function deleteProduct(id) {
+    if (confirm('Bạn có chắc chắn muốn xóa sản phẩm này? Hành động này không thể hoàn tác!')) {
+        fetch(`/admin/products/${id}`, {
+            method: 'DELETE'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Xóa sản phẩm thành công!');
+                window.location.href = '/admin/products';
+            } else {
+                alert('Lỗi: ' + (data.error || 'Không thể xóa sản phẩm'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Có lỗi xảy ra khi xóa sản phẩm');
+        });
+    }
+}
+</script>
+
